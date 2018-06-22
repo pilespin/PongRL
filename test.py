@@ -1,18 +1,29 @@
 
+
+import tensorflow as tf
+from tfHelper import tfHelper
+
 import gym
 import time
 import os
 import random
 import numpy as np
-
 import cv2
 
-def mkdir_p(path):
-	if not os.path.exists(path):
-		os.mkdir(path)
+import predict
+import common
+
+c = common
+
+def predict_one(model, img):
+	# img = tfHelper.image_to_array("new/5/1/28.png", c.convertColor)
+	img = np.array([img])
+	img = c.normalize(img)
+	pred = predict.predict(model, img)
+	return (pred[0])
 
 def save_episode(frame_nb, observation, action, path):
-	mkdir_p(path + str(action))
+	c.mkdir_p(path + str(action))
 	new_path = path + str(action) + '/' + str(frame_nb) + '.png'
 	# print('saved: ' + new_path)
 	cv2.imwrite(new_path, observation[:,:,::-1])
@@ -24,8 +35,11 @@ def random_episode(env):
 	for i in range(1000):
 		# time.sleep(0.01)
 		# env.render()
-		action = env.action_space.sample()
-		# action = random.random(0,2)
+		# print ("observation", observation.shape)
+		# if i%2 == 0:
+		action = random.randint(0,5)
+		# else:
+			# action = predict_one(model, observation)
 		observation, reward, done, info = env.step(action)
 		x.append(observation)
 		y.append(action)
@@ -34,27 +48,24 @@ def random_episode(env):
 			return x, y, i+1
 		if reward == -1:
 			break
-	# return x, y, i+1
 	return [], [], 0
 
 
-
+model = tfHelper.load_model("model")
 
 env = gym.make('Pong-v0')
 allAction = env.unwrapped.get_action_meanings()
 print(allAction)
 
 folder = "new/"
-mkdir_p(folder)
+c.mkdir_p(folder)
 
 for episode in range(1, 2000):
 	x, y, i = random_episode(env)
 	if i > 0:
 		path = str(episode) + '/'
-		mkdir_p(folder + path)
-		# i = 0
+		c.mkdir_p(folder + path)
 		for i, (observation, action) in enumerate(zip(x,y)):
-			# i+=1
 			if i > 20:
 				save_episode(i, observation, action, folder + path)
 
