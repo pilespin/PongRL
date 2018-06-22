@@ -1,22 +1,20 @@
 
 import tensorflow as tf
 from tfHelper import tfHelper
-# import numpy as np
+import numpy as np
+import os
 
 import model
 import predict
 import common
-# import os
-# import data
-# import matplotlib
 
-# from PIL import Image
-
-path = './new/5/'
+path = './new/'
 
 k = tf.keras
 c = common
 
+k.initializers.Ones()
+# k.initializers.RandomUniform(minval=0.95, maxval=1.05, seed=None)
 tfHelper.log_level_decrease()
 tfHelper.numpy_show_entire_array(28)
 
@@ -45,9 +43,20 @@ learning_rate_reduction = k.callbacks.ReduceLROnPlateau(monitor='val_loss',
 
 
 print ("Load data ...")
-(x_train, y_train) = tfHelper.get_dataset_with_folder(path, c.convertColor)
-x_train = c.normalize(x_train)
-# print('x_train shape:', x_train.shape)
+x_train = []
+y_train = []
+for folder in os.listdir(path):
+    if folder[0] != '.':
+        print ("Load folder: " + folder)
+        (x, y) = tfHelper.get_dataset_with_folder(path+folder + '/', c.convertColor)
+        x = c.normalize(x)
+        for i in x:
+            x_train.append(i)
+        for i in y:
+            y_train.append(i)
+
+x_train = np.array(x_train)
+y_train = np.array(y_train)
 
 
 
@@ -56,7 +65,7 @@ for i in range(c.epochs):
     # model.fit_generator(datagen.flow(x_train, y_train, batch_size=batch_size),
     model.fit(x_train, y_train,
             batch_size=128,
-            epochs=50,
+            epochs=1,
             validation_data=(x_train, y_train),
             # validation_data=(x_test, y_test),
             shuffle=True,

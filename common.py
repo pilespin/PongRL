@@ -18,3 +18,6 @@ def normalize(x_train):
 def mkdir_p(path):
 	if not os.path.exists(path):
 		os.mkdir(path)
+
+def count_elem_in_folder(path):
+	return len(os.listdir(path))

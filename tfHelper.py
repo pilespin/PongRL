@@ -1,13 +1,11 @@
 
 import tensorflow as tf
-
-# from keras.models import model_from_yaml
+import sklearn.preprocessing as skp
+import pandas as pd
 import numpy as np
 import Image
 import os
-import pandas as pd
 
-import sklearn.preprocessing as skp
 
 
 class tfHelper:
