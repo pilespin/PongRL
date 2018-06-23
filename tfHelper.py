@@ -87,7 +87,7 @@ class tfHelper:
 
 		for foldername in os.listdir(path):
 			if foldername[0] != '.':
-				print("Load folder: " + foldername)
+				# print("Load folder: " + foldername)
 				for filename in os.listdir(path + foldername):
 					if filename[0] != '.':
 						path2 = path + foldername + "/" + filename

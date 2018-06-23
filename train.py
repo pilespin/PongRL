@@ -13,14 +13,19 @@ path = './new/'
 k = tf.keras
 c = common
 
-k.initializers.Ones()
-# k.initializers.RandomUniform(minval=0.95, maxval=1.05, seed=None)
+# k.initializers.Ones()
+# k.initializers.RandomUniform(minval=0.7, maxval=1, seed=None)
 tfHelper.log_level_decrease()
 tfHelper.numpy_show_entire_array(28)
 
 
-# model = tfHelper.load_model("model")
-model = model.model()
+model = tfHelper.load_model("model")
+opt = k.optimizers.Adam(lr=1e-3)
+model.compile(loss='categorical_crossentropy',
+        optimizer=opt,
+        metrics=['accuracy'])
+
+# model = model.model()
 
 tensorBoard = k.callbacks.TensorBoard()
 
@@ -38,7 +43,6 @@ learning_rate_reduction = k.callbacks.ReduceLROnPlateau(monitor='val_loss',
                                                     # zoom_range=0.1,
                                                     # horizontal_flip=True,
                                                     # fill_mode='nearest')
-# datagen.fit(x_train)
 
 
 
@@ -50,27 +54,39 @@ for folder in os.listdir(path):
         print ("Load folder: " + folder)
         (x, y) = tfHelper.get_dataset_with_folder(path+folder + '/', c.convertColor)
         x = c.normalize(x)
-        for i in x:
-            x_train.append(i)
-        for i in y:
-            y_train.append(i)
+
+        if len(y[0]) == c.num_classes:
+            for i in x:
+                x_train.append(i)
+            for i in y:
+                y_train.append(i)
 
 x_train = np.array(x_train)
 y_train = np.array(y_train)
 
+print("x_train", x_train.shape)
+print("y_train", y_train.shape)
 
+if y_train.shape[0] == 0:
+    print("Bad dataset")
+    exit(0)
+
+
+# datagen.fit(x_train)
 
 for i in range(c.epochs):
     print("Epoch " + str(i) + '/' + str(c.epochs))
-    # model.fit_generator(datagen.flow(x_train, y_train, batch_size=batch_size),
+    # model.fit_generator(datagen.flow(x_train, y_train, batch_size=128),
     model.fit(x_train, y_train,
-            batch_size=128,
-            epochs=1,
-            validation_data=(x_train, y_train),
+            # batch_size=128,
+            epochs=10,
+            # validation_data=(x_train, y_train),
             # validation_data=(x_test, y_test),
+            steps_per_epoch=5,
             shuffle=True,
             verbose=1,
-            callbacks=[learning_rate_reduction, tensorBoard]
+            # callbacks=[learning_rate_reduction, tensorBoard]
+            callbacks=[ tensorBoard]
             )
 
     tfHelper.save_model(model, "model")

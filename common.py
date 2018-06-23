@@ -3,7 +3,7 @@ import numpy as np
 import os
 
 num_classes = 6
-epochs = 100
+epochs = 1
 imgWidth = 160
 imgHeight = 210
 imgChanel = 3

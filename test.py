@@ -1,5 +1,4 @@
 
-
 import tensorflow as tf
 from tfHelper import tfHelper
 
@@ -12,6 +11,7 @@ import cv2
 import predict
 import common
 
+tfHelper.log_level_decrease()
 c = common
 
 def predict_one(model, img):
@@ -35,7 +35,7 @@ def random_episode(env):
 		# time.sleep(0.01)
 		# env.render()
 		# print ("observation", observation.shape)
-		if i%2 == 0:
+		if i%50 == 0:
 			action = random.randint(0,5)
 		else:
 			action = predict_one(model, observation)
@@ -50,9 +50,6 @@ def random_episode(env):
 	return [], [], 0
 
 
-# i = c.count_elem_in_folder('new/')
-# print(i)
-# exit(0)
 model = tfHelper.load_model("model")
 
 env = gym.make('Pong-v0')
@@ -62,7 +59,7 @@ print(allAction)
 folder = "new/"
 c.mkdir_p(folder)
 
-for episode in range(1, 2000):
+for episode in range(1, 1000):
 	x, y, len = random_episode(env)
 	if len > 0:
 		path = str(len) + '_' + str(c.count_elem_in_folder(folder)) + '/'
