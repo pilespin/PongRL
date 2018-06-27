@@ -2,6 +2,7 @@
 import numpy as np
 import os
 
+allOutput = ['0', '1', '2', '3', '4', '5']
 num_classes = 6
 epochs = 1
 imgWidth = 160

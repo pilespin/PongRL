@@ -7,7 +7,6 @@ import Image
 import os
 
 
-
 class tfHelper:
 
 	k = tf.keras
@@ -81,7 +80,7 @@ class tfHelper:
 	# 	return (np.array(X_train), np.array(Y_train))
 
 	@staticmethod
-	def get_dataset_with_folder(path, convertColor):
+	def get_dataset_with_folder(path, convertColor, allOutput):
 		X_train = []
 		Y_train = []
 
@@ -95,7 +94,7 @@ class tfHelper:
 						img = tfHelper.image_to_array(path2, convertColor)
 						X_train.append(img)
 						Y_train.append(foldername)
-		Y_train = tfHelper.to_categorical_string(Y_train)
+		Y_train = tfHelper.to_categorical_string(Y_train, allOutput)
 		return (np.array(X_train), np.array(Y_train))
 
 	@staticmethod
@@ -129,10 +128,11 @@ class tfHelper:
 	###########################################################################
 
 	@staticmethod
-	def to_categorical_string(array):
-		le = skp.LabelEncoder().fit(array)
-		array = le.transform(array)
-		array = pd.get_dummies(array)
+	def to_categorical_string(array, allOutput):
+		# le = skp.LabelEncoder().fit(allOutput)
+		# array = le.transform(array)
+		cat = pd.Series(array).astype(pd.api.types.CategoricalDtype(categories=allOutput))
+		array = pd.get_dummies(cat)
 		return array
 
 	@staticmethod

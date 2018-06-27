@@ -16,7 +16,7 @@ c = common
 # k.initializers.Ones()
 # k.initializers.RandomUniform(minval=0.7, maxval=1, seed=None)
 tfHelper.log_level_decrease()
-tfHelper.numpy_show_entire_array(28)
+# tfHelper.numpy_show_entire_array(28)
 
 
 model = tfHelper.load_model("model")
@@ -52,8 +52,10 @@ y_train = []
 for folder in os.listdir(path):
     if folder[0] != '.':
         print ("Load folder: " + folder)
-        (x, y) = tfHelper.get_dataset_with_folder(path+folder + '/', c.convertColor)
+        (x, y) = tfHelper.get_dataset_with_folder(path+folder + '/', c.convertColor, c.allOutput)
         x = c.normalize(x)
+        # print (x)
+        # print (y)
 
         if len(y[0]) == c.num_classes:
             for i in x:
@@ -75,7 +77,7 @@ if y_train.shape[0] == 0:
 # datagen.fit(x_train)
 
 for i in range(c.epochs):
-    print("Epoch " + str(i) + '/' + str(c.epochs))
+    print("Epoch " + str(i+1) + '/' + str(c.epochs))
     # model.fit_generator(datagen.flow(x_train, y_train, batch_size=128),
     model.fit(x_train, y_train,
             # batch_size=128,
