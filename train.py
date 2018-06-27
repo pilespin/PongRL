@@ -19,7 +19,11 @@ tfHelper.log_level_decrease()
 # tfHelper.numpy_show_entire_array(28)
 
 
-model = tfHelper.load_model("model")
+if os.path.exists("model.h5"):
+	model = tfHelper.load_model("model")
+else:
+	model = model.model()
+
 opt = k.optimizers.Adam(lr=1e-3)
 model.compile(loss='categorical_crossentropy',
         optimizer=opt,
@@ -35,14 +39,14 @@ learning_rate_reduction = k.callbacks.ReduceLROnPlateau(monitor='val_loss',
                                                         factor=0.5, 
                                                         min_lr=1e-09)
 
-# datagen = k.preprocessing.image.ImageDataGenerator( 
-                                                    # rotation_range=20,
-                                                    # width_shift_range=0.1,
-                                                    # height_shift_range=0.1,
-                                                    # shear_range=0.2,
-                                                    # zoom_range=0.1,
+datagen = k.preprocessing.image.ImageDataGenerator( 
+                                                    rotation_range=1,
+                                                    width_shift_range=0.01,
+                                                    height_shift_range=0.01,
+                                                    shear_range=0.02,
+                                                    zoom_range=0.01,
                                                     # horizontal_flip=True,
-                                                    # fill_mode='nearest')
+                                                    fill_mode='nearest')
 
 
 
@@ -78,17 +82,18 @@ if y_train.shape[0] == 0:
 
 for i in range(c.epochs):
     print("Epoch " + str(i+1) + '/' + str(c.epochs))
-    # model.fit_generator(datagen.flow(x_train, y_train, batch_size=128),
-    model.fit(x_train, y_train,
+    model.fit_generator(datagen.flow(x_train, y_train, batch_size=128),
+    # model.fit(x_train, y_train,
             # batch_size=128,
+            workers=8,
+            steps_per_epoch=20,
             epochs=10,
             # validation_data=(x_train, y_train),
             # validation_data=(x_test, y_test),
-            steps_per_epoch=5,
             shuffle=True,
             verbose=1,
             # callbacks=[learning_rate_reduction, tensorBoard]
-            callbacks=[ tensorBoard]
+            callbacks=[tensorBoard]
             )
 
     tfHelper.save_model(model, "model")

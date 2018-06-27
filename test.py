@@ -31,12 +31,12 @@ def random_episode(env):
 	x = []
 	y = []
 	observation = env.reset()
-	for i in range(1000):
+	for i in range(500):
 		# time.sleep(0.01)
 		# env.render()
 		# print ("observation", observation.shape)
 		if i%50 == 0:
-			action = random.randint(0,5)
+			action = random.randint(1,3)
 		else:
 			action = predict_one(model, observation)
 		observation, reward, done, info = env.step(action)
@@ -59,7 +59,7 @@ print(allAction)
 folder = "new/"
 c.mkdir_p(folder)
 
-for episode in range(1, 1000):
+for episode in range(1, 300):
 	x, y, len = random_episode(env)
 	if len > 0:
 		path = str(len) + '_' + str(c.count_elem_in_folder(folder)) + '/'
