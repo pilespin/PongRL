@@ -18,7 +18,7 @@ class Train:
 	def __init__(self):
 		'Train Initialized'
 		tfHelper.log_level_decrease()
-		# self.k.initializers.Ones()
+		self.k.initializers.Ones()
 		# self.k.initializers.RandomUniform(minval=0.7, maxval=1, seed=None)
 		# tfHelper.numpy_show_entire_array(28)
 
@@ -40,11 +40,11 @@ class Train:
 																min_lr=1e-09)
 
 		datagen = self.k.preprocessing.image.ImageDataGenerator( 
-															rotation_range=3,
-															width_shift_range=0.05,
-															height_shift_range=0.05,
-															shear_range=0.05,
-															zoom_range=0.05,
+															rotation_range=5,
+															width_shift_range=0.1,
+															height_shift_range=0.1,
+															shear_range=0.1,
+															zoom_range=0.1,
 															# horizontal_flip=True,
 															fill_mode='nearest')
 
@@ -82,12 +82,12 @@ class Train:
 
 		for i in range(self.c.epochs):
 			print("Epoch " + str(i+1) + '/' + str(self.c.epochs))
-			model.fit_generator(datagen.flow(x_train, y_train, batch_size=128),
-			# model.fit(x_train, y_train,
-					# batch_size=128,
-					workers=8,
-					steps_per_epoch=20,
-					epochs=10,
+			# model.fit_generator(datagen.flow(x_train, y_train, batch_size=128),
+			model.fit(x_train, y_train,
+					batch_size=128,
+					# workers=8,
+					# steps_per_epoch=20,
+					epochs=5,
 					# validation_data=(x_train, y_train),
 					# validation_data=(x_test, y_test),
 					shuffle=True,

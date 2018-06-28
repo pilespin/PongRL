@@ -44,7 +44,7 @@ class Test:
 			# env.render()
 			# print ("observation", observation.shape)
 			if i%50 == 0:
-				action = random.randint(1,3)
+				action = random.randint(0,5)
 			else:
 				action = self.predict_one(model, observation)
 			observation, reward, done, info = env.step(action)
