@@ -22,12 +22,5 @@ def model():
 	# model.add(k.layers.Dropout(0.2))
 	model.add(k.layers.Dense(6, activation='softmax'))
 
-	opt = k.optimizers.Adam(lr=1e-3)
-	# opt = k.optimizers.rmsprop(lr=0.0001, decay=1e-6)
-
-	model.compile(loss='categorical_crossentropy',
-              optimizer=opt,
-              metrics=['accuracy'])
-
 	return model
 
