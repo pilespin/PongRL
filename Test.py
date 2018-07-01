@@ -43,10 +43,14 @@ class Test:
 			# time.sleep(0.01)
 			# env.render()
 			# print ("observation", observation.shape)
-			if i%50 == 0:
-				action = random.randint(0,5)
+			# if i%4 == 0:
+			if i%(10) == 0:
+				# print ("Random play")
+				action = random.randint(0,3)
 			else:
 				action = self.predict_one(model, observation)
+				# action = random.randint(0,5)
+			# action = random.randint(0,5)
 			observation, reward, done, info = env.step(action)
 			x.append(observation)
 			y.append(action)

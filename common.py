@@ -4,6 +4,7 @@ import os
 
 allOutput = ['0', '1', '2', '3', '4', '5']
 num_classes = 6
+batchSize = 30
 epochs = 1
 imgWidth = 160
 imgHeight = 210

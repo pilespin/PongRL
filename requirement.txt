@@ -6,7 +6,7 @@ seaborn
 pandas
 pillow-pil
 opencv-python
-tensorflow
+tensorflow-gpu
 gym
 setuptools
 cmake

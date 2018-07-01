@@ -22,44 +22,76 @@ class Train:
 		# self.k.initializers.RandomUniform(minval=0.7, maxval=1, seed=None)
 		# tfHelper.numpy_show_entire_array(28)
 
+	def fit(self, model, x_train, y_train):
+
+		if len(x_train) > 0:
+			x_train = np.array(x_train)
+			y_train = np.array(y_train)
+
+			tensorBoard = self.k.callbacks.TensorBoard()
+
+			learning_rate_reduction = self.k.callbacks.ReduceLROnPlateau(monitor='val_loss', 
+																	patience=1, 
+																	verbose=1, 
+																	factor=0.5, 
+																	min_lr=1e-09)
+
+			datagen = self.k.preprocessing.image.ImageDataGenerator( 
+																rotation_range=5,
+																width_shift_range=0.1,
+																height_shift_range=0.1,
+																shear_range=0.1,
+																zoom_range=0.1,
+																# horizontal_flip=True,
+																fill_mode='nearest')
+
+
+
+			print("x_train", x_train.shape)
+			print("y_train", y_train.shape)
+
+			if y_train.shape[0] == 0:
+				print("Bad dataset")
+				exit(0)
+
+
+			# datagen.fit(x_train)
+
+			for i in range(self.c.epochs):
+				print("Epoch " + str(i+1) + '/' + str(self.c.epochs))
+				# model.fit_generator(datagen.flow(x_train, y_train, batch_size=64),
+				model.fit(x_train, y_train,
+						batch_size=32,
+						# workers=8,
+						# steps_per_epoch=20,
+						epochs=10,
+						# validation_data=(x_train, y_train),
+						# validation_data=(x_test, y_test),
+						shuffle=True,
+						verbose=1,
+						# callbacks=[learning_rate_reduction, tensorBoard]
+						callbacks=[tensorBoard]
+						)
+
+				tfHelper.save_model(model, "model")
+		return model
+
 	def train(self, model):
 
-		opt = self.k.optimizers.Adam(lr=1e-3)
+		opt = self.k.optimizers.Adam(lr=0.0003)
 		model.compile(loss='categorical_crossentropy',
 				optimizer=opt,
 				metrics=['accuracy'])
 
-		# model = model.model()
-
-		tensorBoard = self.k.callbacks.TensorBoard()
-
-		learning_rate_reduction = self.k.callbacks.ReduceLROnPlateau(monitor='val_loss', 
-																patience=1, 
-																verbose=1, 
-																factor=0.5, 
-																min_lr=1e-09)
-
-		datagen = self.k.preprocessing.image.ImageDataGenerator( 
-															rotation_range=5,
-															width_shift_range=0.1,
-															height_shift_range=0.1,
-															shear_range=0.1,
-															zoom_range=0.1,
-															# horizontal_flip=True,
-															fill_mode='nearest')
-
-
-
 		print ("Load data ...")
 		x_train = []
 		y_train = []
-		for folder in os.listdir(self.path):
+		allSize = len(os.listdir(self.path))
+		for cur,folder in enumerate(os.listdir(self.path)):
 			if folder[0] != '.':
-				print ("Load folder: " + folder)
+				# print ("Load folder: " + folder)
 				(x, y) = tfHelper.get_dataset_with_folder(self.path+folder + '/', self.c.convertColor, self.c.allOutput)
 				x = self.c.normalize(x)
-				# print (x)
-				# print (y)
 
 				if len(y[0]) == self.c.num_classes:
 					for i in x:
@@ -67,34 +99,12 @@ class Train:
 					for i in y:
 						y_train.append(i)
 
-		x_train = np.array(x_train)
-		y_train = np.array(y_train)
+			if (cur+1)%self.c.batchSize == 0:
+				print ("Batch " + str(cur+1- self.c.batchSize) + '-' + str(cur+1)+ '/' + str(allSize))
+				model = self.fit(model, x_train, y_train)
+				x_train = []
+				y_train = []
 
-		print("x_train", x_train.shape)
-		print("y_train", y_train.shape)
-
-		if y_train.shape[0] == 0:
-			print("Bad dataset")
-			exit(0)
-
-
-		# datagen.fit(x_train)
-
-		for i in range(self.c.epochs):
-			print("Epoch " + str(i+1) + '/' + str(self.c.epochs))
-			# model.fit_generator(datagen.flow(x_train, y_train, batch_size=128),
-			model.fit(x_train, y_train,
-					batch_size=128,
-					# workers=8,
-					# steps_per_epoch=20,
-					epochs=5,
-					# validation_data=(x_train, y_train),
-					# validation_data=(x_test, y_test),
-					shuffle=True,
-					verbose=1,
-					# callbacks=[learning_rate_reduction, tensorBoard]
-					callbacks=[tensorBoard]
-					)
-
-			tfHelper.save_model(model, "model")
+		print ("Batch " + str(cur+1- self.c.batchSize) + '-' + str(cur+1)+ '/' + str(allSize))
+		model = self.fit(model, x_train, y_train)
 		return model
