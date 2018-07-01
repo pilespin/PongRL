@@ -64,7 +64,7 @@ class Train:
 						batch_size=32,
 						# workers=8,
 						# steps_per_epoch=20,
-						epochs=10,
+						epochs=5,
 						# validation_data=(x_train, y_train),
 						# validation_data=(x_test, y_test),
 						shuffle=True,

@@ -87,6 +87,9 @@ class Test:
 
 			# print('x', len)
 		print ("WIN " + str(win) + "/" + str(nb_episode))
+		self.c.mkdir_p("models")
+		tfHelper.save_model(model, "models/model_" + str(win))
+
 
 	# exit(0)
 
